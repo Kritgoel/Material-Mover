@@ -238,6 +238,7 @@
       });
 
       // Handle form submission
+      // Handle form submission
       document.getElementById('createForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         
@@ -253,8 +254,8 @@
           const image = uploadedImagePath || imageUrl.value;
           
           // Validate all required fields are present
-          if (!title || !description || !priceStr || !quantityStr || !category) {
-            alert('Please fill in all required fields');
+          if (!title || !description || !priceStr || !quantityStr || !category || !address || !phone_no) {
+            toast.error('Please fill in all required fields');
             return;
           }
           
@@ -263,12 +264,12 @@
           const quantity = parseInt(quantityStr);
           
           if (isNaN(price) || price < 0) {
-            alert('Please enter a valid price (must be 0 or greater)');
+            toast.error('Please enter a valid price (must be 0 or greater)');
             return;
           }
           
           if (isNaN(quantity) || quantity < 0) {
-            alert('Please enter a valid quantity (must be 0 or greater)');
+            toast.error('Please enter a valid quantity (must be 0 or greater)');
             return;
           }
 
@@ -285,9 +286,11 @@
             body: JSON.stringify({ 
               title, 
               description, 
-              price, 
-              quantity,
-              category, 
+              price,      // Now a number
+              quantity,   // Now a number
+              category,
+              address,    // Added
+              phone_no,   // Added
               image 
             }) 
           });
@@ -295,7 +298,7 @@
           const data = await resp.json();
           
           if (resp.ok) { 
-              toast.success(currentEditId ? 'Product updated successfully' : 'Product created successfully');
+            toast.success(currentEditId ? 'Product updated successfully' : 'Product created successfully');
             // Clear form and reset edit state
             e.target.reset();
             imagePreview.innerHTML = '';
@@ -310,13 +313,12 @@
             const errorMessage = data.details ? 
               data.details.join('\n') : 
               data.message || 'Error creating product';
-              toast.error(errorMessage);
+            toast.error(errorMessage);
           }
         } catch (err) {
           console.error('Error creating product:', err);
-            toast.error('Error creating product. Please try again.');
+          toast.error('Error creating product. Please try again.');
         }
-        
       });
 
       // Load seller's products
